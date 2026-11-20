@@ -171,7 +171,7 @@ function galleryRail(projects) {
 export function homeView(content) {
   const { profile, projects, services } = content;
   const featured = projects.filter(project => project.featured);
-  const art = { src: "/media/studio.webp", small: "/media/studio-small.webp", alt: "Folded ribbed aluminum sculpture on concrete with a square of sage paper" };
+  const art = { src: "/media/jayant-portrait-sage.webp", small: "/media/jayant-portrait-sage-small.webp", alt: "Jayant smiling with crossed arms against a dark background with muted sage smoke" };
   return `<section class="hero">
     <div class="frame hero-inner">
       <div class="hero-copy">
@@ -182,7 +182,7 @@ export function homeView(content) {
       </div>
       <figure class="hero-art">
         <div class="hero-art-image">${picture(art, { lazy: false, sizes: "(max-width: 760px) 92vw, 45vw" })}</div>
-        <figcaption><span>Studio study</span><span>Form · Texture · Light</span></figcaption>
+        <figcaption><span>Jayant</span><span>Design · Motion · Code</span></figcaption>
       </figure>
     </div>
   </section>
