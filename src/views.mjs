@@ -334,7 +334,7 @@ export function aboutView(content) {
   return `<section class="frame service-intro about-page"><div class="page-intro">
     ${eyebrow("About")}<h1>A practice across <em>disciplines.</em></h1><p>${h(profile.bio)}</p>
     <div class="actions">${safeLink(profile.resume) ? button("View résumé", safeLink(profile.resume), "outline") : ""}${button("Get in touch", "/contact")}</div>
-  </div><div class="service-cover">${picture({ src: "/media/studio.webp", small: "/media/studio-small.webp", alt: "Folded aluminum and concrete sculpture" }, { lazy: false })}</div></section>
+  </div><div class="service-cover about-artwork">${picture({ src: "/media/cultural-ceremony-proposal.webp", small: "/media/cultural-ceremony-proposal-small.webp", alt: "Jayant’s Dilli Meri Jaan cultural ceremony sponsorship proposal design" }, { lazy: false })}</div></section>
   <section class="frame section">${sectionTitle("Capabilities", "Skills and", "tools.")}<div class="about-skills">${services.map(service => '<article><h3><a href="' + serviceUrl(service) + '">' + h(service.title) + '</a></h3><p>' + h(service.description) + '</p>' + tags([...(service.skills ?? []), ...(service.tools ?? [])]) + '</article>').join("")}</div></section>`;
 }
 
