@@ -94,7 +94,7 @@ test("sample pages, service routes and case studies render, and missing projects
   const home = await resolve("/");
   assert.equal(home.status, 200);
   assert.equal(home.headers.get("X-Robots-Tag"), "noindex, nofollow");
-  assert.match(await home.text(), /Making the digital feel.*human/);
+  assert.match(await home.text(), /Hi, I’m.*Jayant/);
   for (const [service, project] of [["graphic-design", "Afterhours"], ["video-editing", "Still in Motion"], ["ui-ux", "Fieldwork"], ["development", "Index Studio"]]) {
     const response = await resolve("/work/" + service);
     assert.equal(response.status, 200);

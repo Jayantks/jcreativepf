@@ -271,3 +271,6 @@ fieldset { margin: 0; padding: 0; border: 0; min-width: 0; }
   .rail-duplicate, .rail-extra, [data-motion] { display: none !important; }
   .is-moving .rail-track { animation: none; }
 }
+
+.wordmark { font-family: Georgia, serif; font-style: italic; font-weight: 600; font-size: clamp(1rem, 1.6vw, 1.4rem); letter-spacing: -.055em; }
+.wordmark span:last-child { overflow-wrap: anywhere; }

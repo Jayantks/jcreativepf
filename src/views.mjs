@@ -54,7 +54,7 @@ export function shell(content, path, title, description, body, options = {}) {
     navItem("Contact", "/contact", path === "/contact"),
   ].join("");
   const socials = (profile.socials ?? []).map(social => safeLink(social.url) ? '<a href="' + h(safeLink(social.url)) + '" rel="noopener noreferrer" target="_blank">' + h(social.label) + '</a>' : "").join("");
-  const pageTitle = home ? profile.name + " | Independent creative portfolio" : title + " | " + profile.name;
+  const pageTitle = home ? profile.name + " | Introduction" : title + " | " + profile.name;
   const canonical = options.origin && !options.noindex ? options.origin + path : "";
   const metaImage = options.image ?? "/media/studio.webp";
   const imageUrl = options.origin ? new URL(metaImage, options.origin).href : "";
@@ -175,10 +175,10 @@ export function homeView(content) {
   return `<section class="hero">
     <div class="frame hero-inner">
       <div class="hero-copy">
-        ${eyebrow("Independent creative portfolio")}
+        ${eyebrow("Introduction")}
         <h1>${h(profile.headline)} <em>${h(profile.headlineAccent)}</em></h1>
         <p class="hero-intro">${h(profile.intro)}</p>
-        <div class="actions">${button("Explore the work", "/work")}${button("About the practice", "/about", "outline")}</div>
+        <div class="actions">${button("Explore the work", "/work")}${button("About me", "/about", "outline")}</div>
       </div>
       <figure class="hero-art">
         <div class="hero-art-image">${picture(art, { lazy: false, sizes: "(max-width: 760px) 92vw, 45vw" })}</div>
@@ -186,13 +186,13 @@ export function homeView(content) {
       </figure>
     </div>
   </section>
+  <section class="frame section about-preview">
+    <div>${eyebrow("About me")}<h2>Design, motion, <em>and code.</em></h2></div>
+    <div><p>${h(profile.bio)}</p>${tags([...new Set(services.flatMap(service => service.tools))].slice(0, 6))}${button("More about me", "/about", "outline")}</div>
+  </section>
   ${featured.length ? `<section class="frame section featured">${sectionTitle("Portfolio", "Selected", "work.", button("View all work", "/work", "outline"))}${workGrid(featured, services)}</section>` : ""}
   <section class="frame section">${sectionTitle("Disciplines", "Ways I", "work.")}${serviceCards(services)}</section>
   ${galleryRail(projects)}
-  <section class="frame section about-preview">
-    <div>${eyebrow("About the practice")}<h2>From the first idea <em>to the final build.</em></h2></div>
-    <div><p>${h(profile.bio)}</p>${tags([...new Set(services.flatMap(service => service.tools))].slice(0, 6))}${button("More about me", "/about", "outline")}</div>
-  </section>
   ${contactBand()}`;
 }
 
