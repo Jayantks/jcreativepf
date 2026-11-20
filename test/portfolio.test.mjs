@@ -95,12 +95,12 @@ test("sample pages, service routes and case studies render, and missing projects
   assert.equal(home.status, 200);
   assert.equal(home.headers.get("X-Robots-Tag"), "noindex, nofollow");
   assert.match(await home.text(), /Hi, I’m.*Jayant/);
-  for (const [service, project] of [["graphic-design", "Afterhours"], ["video-editing", "Still in Motion"], ["ui-ux", "Fieldwork"], ["development", "Index Studio"]]) {
+  for (const [service, project] of [["graphic-design", "Dilli meri jaan"], ["video-editing", "chhath puja reel"], ["ui-ux", "Food Delivery App"], ["development", "Food Delivery App"]]) {
     const response = await resolve("/work/" + service);
     assert.equal(response.status, 200);
     assert.match(await response.text(), new RegExp(project));
   }
-  assert.match(await (await resolve("/projects/fieldwork")).text(), /Interface concept/);
+  assert.match(await (await resolve("/projects/food-delivery-ui")).text(), /Cart interface/);
   assert.equal((await resolve("/projects/missing")).status, 404);
   assert.match(await (await resolve("/admin")).text(), /Connect Supabase/);
 });

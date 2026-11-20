@@ -274,3 +274,7 @@ fieldset { margin: 0; padding: 0; border: 0; min-width: 0; }
 
 .wordmark { font-family: Georgia, serif; font-style: italic; font-weight: 600; font-size: clamp(1rem, 1.6vw, 1.4rem); letter-spacing: -.055em; }
 .wordmark span:last-child { overflow-wrap: anywhere; }
+
+.genre-graphic-design .project-media img { object-fit: contain; }
+.genre-video-editing .project-media { aspect-ratio: 4/5; }
+.genre-video-editing .project-media img { object-fit: contain; }

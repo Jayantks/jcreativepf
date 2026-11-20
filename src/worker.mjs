@@ -351,6 +351,17 @@ export function createPortfolio(getAsset) {
       if (request.method !== "POST" && /^\/(?:styles\.css|ui\.js|favicon\.ico|media\/[a-z0-9-]+\.(?:webp|webm))$/.test(path)) {
         return staticResponse(request, path, await getAsset(path));
       }
+      const clip = path.match(/^\/clips\/(\d+)\.mp4$/);
+      const clipIds = {"15": "11kQnicYRSoSwiToHAtZxcgoKwREP0gL6", "16": "1LUVrxwWLbbTFxM78W37FYZl25vKrj1Rs", "17": "17lFf3nhtM--mGY74b6pQvPA2Kxg3hDcw", "18": "1CBOcrdp9ussQOaF_UPJCxfYs8p4B847h", "19": "1oTmgkgVFgXnlqQ70e_e10COCcvJSidYD", "20": "1KVlaPbNk3JyzBLTylJnW_nHIkVzBnKrn", "21": "1-t0op8qcSAY0MgiHGbBsv52zvv3QvOTz", "22": "1tj-STKn4o8m68XsjE_OkEdVPG7gRCOdG", "23": "1h2egfFfnWvIbbuQfuJn7UAw2fMb26SYO"};
+      if (clip && clipIds[clip[1]] && request.method !== "POST") {
+        const headers = new Headers();
+        if (request.headers.has("range")) headers.set("Range", request.headers.get("range"));
+        const upstream = await fetch("https://drive.google.com/uc?export=download&id=" + clipIds[clip[1]], { headers, redirect: "follow" });
+        if (!upstream.ok || !(upstream.headers.get("content-type") ?? "").includes("video")) return new Response("Video temporarily unavailable. Open the original project link.", { status: 502 });
+        const output = new Headers({ "Content-Type": "video/mp4", "Cache-Control": "public, max-age=3600", "Accept-Ranges": "bytes" });
+        for (const key of ["content-range", "content-length"]) if (upstream.headers.has(key)) output.set(key, upstream.headers.get(key));
+        return new Response(request.method === "HEAD" ? null : upstream.body, { status: upstream.status, headers: output });
+      }
       const context = { content: demoContent(), request, env, url, path, origin: url.origin, private: path === "/admin" || path.startsWith("/admin/") };
       let response;
       try {
