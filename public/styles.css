@@ -279,5 +279,5 @@ fieldset { margin: 0; padding: 0; border: 0; min-width: 0; }
 .genre-video-editing .project-media { aspect-ratio: 4/5; }
 .genre-video-editing .project-media img { object-fit: contain; }
 
-.about-artwork { background: #210307; }
+.about-artwork { background: #151515; }
 .about-artwork img { object-fit: contain; }
