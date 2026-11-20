@@ -280,4 +280,4 @@ fieldset { margin: 0; padding: 0; border: 0; min-width: 0; }
 .genre-video-editing .project-media img { object-fit: contain; }
 
 .about-artwork { background: #151515; }
-.about-artwork img { object-fit: contain; }
+.about-artwork img { object-fit: cover; object-position: center 42%; }
