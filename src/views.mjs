@@ -172,7 +172,7 @@ export function homeView(content) {
   const { profile, projects, services } = content;
   const featured = projects.filter(project => project.featured);
   const art = { src: "/media/jayant-portrait-sage.webp", small: "/media/jayant-portrait-sage-small.webp", alt: "Jayant smiling with crossed arms against a dark background with muted sage smoke" };
-  return `<section class="hero"><canvas class="hero-mist" aria-hidden="true"></canvas>
+  return `<canvas class="page-mist" aria-hidden="true"></canvas><section class="hero">
     <div class="frame hero-inner">
       <div class="hero-copy">
         ${eyebrow("Introduction")}

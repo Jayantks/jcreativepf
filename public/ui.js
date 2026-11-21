@@ -189,54 +189,56 @@ function updateSectionFields(block) {
   }
 }
 
-// Soft smoke particles disperse around the pointer and return to a slow drift.
-const mistCanvas = document.querySelector(".hero-mist");
+
+// A viewport-sized fog field carries the pointer's direction into a soft wake.
+const mistCanvas = document.querySelector(".page-mist");
 if (mistCanvas) {
-  const hero = mistCanvas.closest(".hero");
   const context = mistCanvas.getContext("2d");
-  const pointer = { x: -1000, y: -1000 };
+  const pointer = { x: -1000, y: -1000, vx: 0, vy: 0, time: 0 };
   let width = 0, height = 0, particles = [], frame = 0, previous = 0;
-  let visible = true;
   const sprite = document.createElement("canvas");
   sprite.width = sprite.height = 128;
   const brush = sprite.getContext("2d");
   const gradient = brush.createRadialGradient(64, 64, 0, 64, 64, 64);
-  gradient.addColorStop(0, "rgba(164,182,154,.12)");
-  gradient.addColorStop(.38, "rgba(142,163,131,.065)");
+  gradient.addColorStop(0, "rgba(164,182,154,.1)");
+  gradient.addColorStop(.35, "rgba(150,170,138,.055)");
   gradient.addColorStop(1, "rgba(142,163,131,0)");
   brush.fillStyle = gradient;
   brush.fillRect(0, 0, 128, 128);
   function resizeMist() {
-    width = hero.clientWidth;
-    height = hero.clientHeight;
+    width = innerWidth;
+    height = innerHeight;
     const ratio = Math.min(devicePixelRatio || 1, 1.5);
     mistCanvas.width = Math.round(width * ratio);
     mistCanvas.height = Math.round(height * ratio);
     context.setTransform(ratio, 0, 0, ratio, 0, 0);
-    particles = Array.from({ length: width < 700 ? 30 : 65 }, () => ({
+    particles = Array.from({ length: width < 700 ? 40 : 85 }, () => ({
       x: Math.random() * width, y: Math.random() * height,
-      vx: (Math.random() - .5) * .15, vy: (Math.random() - .5) * .1,
-      radius: 65 + Math.random() * 110, phase: Math.random() * Math.PI * 2,
+      vx: 0, vy: 0, radius: 65 + Math.random() * 105,
+      phase: Math.random() * Math.PI * 2,
     }));
   }
   function drawMist(time) {
     frame = 0;
-    if (reducedMotion.matches || !visible || document.hidden) return;
+    if (reducedMotion.matches || document.hidden) return;
     const step = Math.min((time - previous) / 16.67 || 1, 2);
     previous = time;
     context.clearRect(0, 0, width, height);
+    const active = time - pointer.time < 350;
+    pointer.vx *= Math.pow(.93, step);
+    pointer.vy *= Math.pow(.93, step);
     for (const particle of particles) {
       const dx = particle.x - pointer.x, dy = particle.y - pointer.y;
       const distance = Math.hypot(dx, dy);
-      if (distance < 180 && distance > 0) {
-        const force = (1 - distance / 180) * .22 * step;
-        particle.vx += (dx / distance - dy / distance * .35) * force;
-        particle.vy += (dy / distance + dx / distance * .35) * force;
+      if (active && distance < 220 && distance > 1) {
+        const influence = Math.pow(1 - distance / 220, 2) * step;
+        particle.vx += (pointer.vx * .07 + dx / distance * .18 - dy / distance * .06) * influence;
+        particle.vy += (pointer.vy * .07 + dy / distance * .18 + dx / distance * .06) * influence;
       }
-      particle.vx *= Math.pow(.98, step);
-      particle.vy *= Math.pow(.98, step);
-      particle.x += (particle.vx + .11 + Math.sin(time * .00018 + particle.phase) * .1) * step;
-      particle.y += (particle.vy + Math.cos(time * .00015 + particle.phase) * .1) * step;
+      particle.vx *= Math.pow(.97, step);
+      particle.vy *= Math.pow(.97, step);
+      particle.x += (particle.vx + .08 + Math.sin(time * .00015 + particle.phase) * .12) * step;
+      particle.y += (particle.vy + Math.cos(time * .00012 + particle.phase) * .12) * step;
       const r = particle.radius;
       if (particle.x > width + r) particle.x = -r;
       if (particle.x < -r) particle.x = width + r;
@@ -250,17 +252,21 @@ if (mistCanvas) {
     if (frame) cancelAnimationFrame(frame);
     frame = 0;
     previous = 0;
-    if (!reducedMotion.matches && visible && !document.hidden) frame = requestAnimationFrame(drawMist);
+    if (!reducedMotion.matches && !document.hidden) frame = requestAnimationFrame(drawMist);
     else context.clearRect(0, 0, width, height);
   }
-  hero.addEventListener("pointermove", event => {
-    const bounds = hero.getBoundingClientRect();
-    pointer.x = event.clientX - bounds.left;
-    pointer.y = event.clientY - bounds.top;
+  window.addEventListener("pointermove", event => {
+    const now = performance.now();
+    const elapsed = Math.max(8, now - pointer.time);
+    const fresh = now - pointer.time < 150;
+    pointer.vx = fresh ? Math.max(-25, Math.min(25, (event.clientX - pointer.x) / elapsed * 16.67)) : 0;
+    pointer.vy = fresh ? Math.max(-25, Math.min(25, (event.clientY - pointer.y) / elapsed * 16.67)) : 0;
+    pointer.x = event.clientX;
+    pointer.y = event.clientY;
+    pointer.time = now;
   }, { passive: true });
-  hero.addEventListener("pointerleave", () => { pointer.x = pointer.y = -1000; });
-  new ResizeObserver(resizeMist).observe(hero);
-  new IntersectionObserver(entries => { visible = entries[0].isIntersecting; syncMist(); }).observe(hero);
+  document.addEventListener("pointerleave", () => { pointer.time = -1000; });
+  window.addEventListener("resize", resizeMist, { passive: true });
   document.addEventListener("visibilitychange", syncMist);
   reducedMotion.addEventListener("change", syncMist);
   resizeMist();
