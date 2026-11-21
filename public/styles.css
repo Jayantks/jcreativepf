@@ -102,8 +102,8 @@ button { cursor: pointer; }
 .rail-tile { display: block; width: max(230px, 26vw); aspect-ratio: 2.15; overflow: hidden; border-radius: 12px; background: var(--surface); }
 .rail-tile img { width: 100%; height: 100%; object-fit: cover; }
 .rail-tile:focus-visible { outline-offset: -4px; }
-.is-moving .rail-track { animation: drift 37s linear infinite; }
-.is-moving .rail-window:nth-child(even) .rail-track { animation-direction: reverse; animation-duration: 42s; }
+.is-moving .rail-track { animation: drift 160s linear infinite; }
+.is-moving .rail-window:nth-child(even) .rail-track { animation-direction: reverse; animation-duration: 180s; }
 .rails:hover .rail-track, .rails:focus-within .rail-track, .is-paused .rail-track { animation-play-state: paused; }
 .rails:focus-within .rail-track { animation-name: none; }
 .rails:focus-within .rail-window { overflow-x: auto; mask-image: none; }

@@ -156,9 +156,13 @@ function contactBand(label = "Have a project in mind?", href = "/contact") {
 
 function galleryRail(projects) {
   if (projects.length < 2) return "";
+  const graphics = projects.filter(project => project.service === "graphic-design");
+  const otherWork = projects.filter(project => project.service !== "graphic-design");
+  const rows = graphics.length >= 4 ? [graphics.filter((_, index) => index % 2 === 0), graphics.filter((_, index) => index % 2 === 1), otherWork.length ? otherWork : graphics] : [projects, projects, projects];
   const limit = Math.min(3, projects.length);
   const rails = Array.from({ length: limit }, (_, row) => {
-    const reordered = [...projects.slice(row), ...projects.slice(0, row)];
+    const entries = rows[row];
+    const reordered = [...entries.slice(row), ...entries.slice(0, row)];
     const tiles = reordered.map(project => '<a class="rail-tile" href="' + projectUrl(project) + '" aria-label="View ' + h(project.title) + '">' + picture(project.cover, { sizes: "300px", decorative: true }) + '</a>').join("");
     const duplicate = (project, extra = "") => '<a tabindex="-1" aria-hidden="true" class="rail-tile ' + extra + '" href="' + projectUrl(project) + '">' + picture(project.cover, { sizes: "300px", decorative: true }) + '</a>';
     const extraTiles = reordered.slice(0, Math.max(0, 4 - reordered.length));
