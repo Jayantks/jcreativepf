@@ -200,8 +200,8 @@ if (mistCanvas) {
   sprite.width = sprite.height = 128;
   const brush = sprite.getContext("2d");
   const gradient = brush.createRadialGradient(64, 64, 0, 64, 64, 64);
-  gradient.addColorStop(0, "rgba(164,182,154,.1)");
-  gradient.addColorStop(.35, "rgba(150,170,138,.055)");
+  gradient.addColorStop(0, "rgba(180,205,160,.20)");
+  gradient.addColorStop(.35, "rgba(147,183,126,.11)");
   gradient.addColorStop(1, "rgba(142,163,131,0)");
   brush.fillStyle = gradient;
   brush.fillRect(0, 0, 128, 128);
