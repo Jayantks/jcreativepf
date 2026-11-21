@@ -188,3 +188,81 @@ function updateSectionFields(block) {
     field.querySelector("input, textarea, select").disabled = field.hidden;
   }
 }
+
+// Soft smoke particles disperse around the pointer and return to a slow drift.
+const mistCanvas = document.querySelector(".hero-mist");
+if (mistCanvas) {
+  const hero = mistCanvas.closest(".hero");
+  const context = mistCanvas.getContext("2d");
+  const pointer = { x: -1000, y: -1000 };
+  let width = 0, height = 0, particles = [], frame = 0, previous = 0;
+  let visible = true;
+  const sprite = document.createElement("canvas");
+  sprite.width = sprite.height = 128;
+  const brush = sprite.getContext("2d");
+  const gradient = brush.createRadialGradient(64, 64, 0, 64, 64, 64);
+  gradient.addColorStop(0, "rgba(164,182,154,.12)");
+  gradient.addColorStop(.38, "rgba(142,163,131,.065)");
+  gradient.addColorStop(1, "rgba(142,163,131,0)");
+  brush.fillStyle = gradient;
+  brush.fillRect(0, 0, 128, 128);
+  function resizeMist() {
+    width = hero.clientWidth;
+    height = hero.clientHeight;
+    const ratio = Math.min(devicePixelRatio || 1, 1.5);
+    mistCanvas.width = Math.round(width * ratio);
+    mistCanvas.height = Math.round(height * ratio);
+    context.setTransform(ratio, 0, 0, ratio, 0, 0);
+    particles = Array.from({ length: width < 700 ? 30 : 65 }, () => ({
+      x: Math.random() * width, y: Math.random() * height,
+      vx: (Math.random() - .5) * .15, vy: (Math.random() - .5) * .1,
+      radius: 65 + Math.random() * 110, phase: Math.random() * Math.PI * 2,
+    }));
+  }
+  function drawMist(time) {
+    frame = 0;
+    if (reducedMotion.matches || !visible || document.hidden) return;
+    const step = Math.min((time - previous) / 16.67 || 1, 2);
+    previous = time;
+    context.clearRect(0, 0, width, height);
+    for (const particle of particles) {
+      const dx = particle.x - pointer.x, dy = particle.y - pointer.y;
+      const distance = Math.hypot(dx, dy);
+      if (distance < 180 && distance > 0) {
+        const force = (1 - distance / 180) * .22 * step;
+        particle.vx += (dx / distance - dy / distance * .35) * force;
+        particle.vy += (dy / distance + dx / distance * .35) * force;
+      }
+      particle.vx *= Math.pow(.98, step);
+      particle.vy *= Math.pow(.98, step);
+      particle.x += (particle.vx + .11 + Math.sin(time * .00018 + particle.phase) * .1) * step;
+      particle.y += (particle.vy + Math.cos(time * .00015 + particle.phase) * .1) * step;
+      const r = particle.radius;
+      if (particle.x > width + r) particle.x = -r;
+      if (particle.x < -r) particle.x = width + r;
+      if (particle.y > height + r) particle.y = -r;
+      if (particle.y < -r) particle.y = height + r;
+      context.drawImage(sprite, particle.x - r, particle.y - r, r * 2, r * 2);
+    }
+    frame = requestAnimationFrame(drawMist);
+  }
+  function syncMist() {
+    if (frame) cancelAnimationFrame(frame);
+    frame = 0;
+    previous = 0;
+    if (!reducedMotion.matches && visible && !document.hidden) frame = requestAnimationFrame(drawMist);
+    else context.clearRect(0, 0, width, height);
+  }
+  hero.addEventListener("pointermove", event => {
+    const bounds = hero.getBoundingClientRect();
+    pointer.x = event.clientX - bounds.left;
+    pointer.y = event.clientY - bounds.top;
+  }, { passive: true });
+  hero.addEventListener("pointerleave", () => { pointer.x = pointer.y = -1000; });
+  new ResizeObserver(resizeMist).observe(hero);
+  new IntersectionObserver(entries => { visible = entries[0].isIntersecting; syncMist(); }).observe(hero);
+  document.addEventListener("visibilitychange", syncMist);
+  reducedMotion.addEventListener("change", syncMist);
+  resizeMist();
+  syncMist();
+}
