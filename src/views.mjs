@@ -31,10 +31,6 @@ function serviceUrl(service) {
   return "/work/" + encodeURIComponent(service.slug);
 }
 
-function studioMark(profile) {
-  return '<span class="studio-mark" aria-hidden="true">✳</span><span>' + h(profile.name) + '</span>';
-}
-
 function navItem(label, url, active) {
   return '<a href="' + url + '"' + (active ? ' aria-current="page"' : "") + '>' + label + '</a>';
 }
@@ -77,7 +73,7 @@ export function shell(content, path, title, description, body, options = {}) {
   <a href="#main" class="skip-link">Skip to content</a>
   <header class="site-header">
     <div class="frame header-inner">
-      <a href="/" class="wordmark" aria-label="${h(profile.name)} home">${studioMark(profile)}</a>
+      <a href="/" class="wordmark" aria-label="${h(profile.name)} home">${h(profile.name)}</a>
       <nav aria-label="Main navigation" class="desktop-nav">${nav}</nav>
       <a class="button outline nav-cta" href="/contact">Let’s talk</a>
       <details class="mobile-nav">
@@ -89,7 +85,7 @@ export function shell(content, path, title, description, body, options = {}) {
   <main id="main" tabindex="-1">${body}</main>
   <footer class="site-footer">
     <div class="frame footer-inner">
-      <a class="wordmark" href="/">${studioMark(profile)}</a>
+      <a class="wordmark" href="/">${h(profile.name)}</a>
       <nav aria-label="Footer navigation"><a href="/work">Work</a><a href="/about">About</a><a href="/contact">Contact</a>${socials}</nav>
       <small>© ${new Date().getFullYear()} ${h(profile.name)}</small>
     </div>
