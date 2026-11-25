@@ -455,8 +455,8 @@ const projects = [
     "summary": "cooked 1 — video edit by Jayant.",
     "cover": {
       "type": "image",
-      "src": "/media/video-18.webp",
-      "alt": "cooked 1"
+      "src": "/media/cooked-1-concert.webp",
+      "alt": "Performer onstage under purple lights with the crowd in the foreground"
     },
     "tools": [],
     "featured": false,
