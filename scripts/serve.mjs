@@ -27,14 +27,11 @@ createServer(async (incoming, outgoing) => {
     const url = new URL(incoming.url, origin);
     if (url.origin !== origin) return outgoing.writeHead(400).end();
     const headers = new Headers(incoming.headers);
-    headers.set("cf-connecting-ip", incoming.socket.remoteAddress ?? "127.0.0.1");
     const method = incoming.method;
     const body = ["GET", "HEAD"].includes(method) ? undefined : Readable.toWeb(incoming);
     const request = new Request(url, { method, headers, body, duplex: body ? "half" : undefined });
     const response = await portfolio.fetch(request, process.env);
     const responseHeaders = Object.fromEntries(response.headers);
-    const cookies = response.headers.getSetCookie();
-    if (cookies.length) responseHeaders["set-cookie"] = cookies;
     outgoing.writeHead(response.status, responseHeaders);
     if (response.body) await pipeline(Readable.fromWeb(response.body), outgoing);
     else outgoing.end();

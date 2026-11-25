@@ -11,19 +11,15 @@ function safeLink(value) {
   }
 }
 
-function siteMedia(asset, width, poster = false) {
+function siteMedia(asset, width) {
   if (!asset) return "";
-  if (!asset.id) return width <= 560 && asset.small ? asset.small : asset.src;
-  const publicId = asset.id.split("/").map(encodeURIComponent).join("/");
-  const root = "https://res.cloudinary.com/" + encodeURIComponent(asset.cloud) + "/";
-  if (asset.type === "video") return root + "video/upload/" + (poster ? "so_auto,c_fill,w_" + width + ",q_auto/" + publicId + ".jpg" : "c_limit,w_1280,f_mp4,q_auto/" + publicId + ".mp4");
-  return root + "image/upload/c_limit,w_" + width + ",f_auto,q_auto/" + publicId;
+  return width <= 560 && asset.small ? asset.small : asset.src;
 }
 
 export function picture(asset, { lazy = true, sizes = "(max-width: 700px) 92vw, 50vw", decorative = false } = {}) {
   if (!asset) return '<div class="empty-media" aria-hidden="true">✳</div>';
-  const small = siteMedia(asset, 560, true);
-  const big = siteMedia(asset, 1152, true);
+  const small = siteMedia(asset, 560);
+  const big = siteMedia(asset, 1152);
   return '<img src="' + h(big) + '" srcset="' + h(small) + " 560w, " + h(big) + ' 1152w" sizes="' + h(sizes) + '" alt="' + h(decorative ? "" : asset.alt) + '" width="1152" height="864" decoding="async" ' + (lazy ? 'loading="lazy"' : 'fetchpriority="high"') + '>';
 }
 
@@ -130,7 +126,6 @@ function showcaseCard(project, services) {
       <div class="project-media">
         ${picture(project.cover)}
         ${video ? `<video class="hover-preview" muted playsinline loop preload="none" data-preview="${h(siteMedia(video, 720))}" aria-hidden="true"></video><span class="play-mark" aria-hidden="true">▶</span>` : ""}
-        ${project.demo ? '<span class="project-demo">Demo project</span>' : ""}
       </div>
       <div class="project-caption">
         <div><p>${h(service?.title ?? "")} ${project.category ? '· ' + h(project.category) : ""}</p><h3>${h(project.title)}</h3></div>
@@ -238,14 +233,14 @@ export function workView(content, service) {
 
 function lightboxImage(asset, group) {
   return `<figure class="case-image">
-    <button type="button" class="zoom-image" data-image="${h(siteMedia(asset, 1800, true))}" data-alt="${h(asset.alt)}" data-caption="${h(asset.caption)}" data-group="${h(group)}" aria-label="Enlarge image: ${h(asset.alt)}">${picture(asset)}<span class="zoom-mark" aria-hidden="true">+</span></button>
+    <button type="button" class="zoom-image" data-image="${h(siteMedia(asset, 1800))}" data-alt="${h(asset.alt)}" data-caption="${h(asset.caption)}" data-group="${h(group)}" aria-label="Enlarge image: ${h(asset.alt)}">${picture(asset)}<span class="zoom-mark" aria-hidden="true">+</span></button>
     ${asset.caption ? '<figcaption>' + h(asset.caption) + '</figcaption>' : ""}
   </figure>`;
 }
 
 function videoPlayer(asset, cover) {
   return `<figure class="case-video">
-    <video controls preload="none" playsinline${safeLink(asset.captions) ? ' crossorigin="anonymous"' : ""} poster="${h(siteMedia(cover ?? asset, 1152, true))}" aria-label="${h(asset.alt)}">
+    <video controls preload="none" playsinline${safeLink(asset.captions) ? ' crossorigin="anonymous"' : ""} poster="${h(siteMedia(cover ?? asset, 1152))}" aria-label="${h(asset.alt)}">
       <source src="${h(siteMedia(asset, 1152))}">
       ${safeLink(asset.captions) ? '<track kind="captions" src="' + h(asset.captions) + '" srclang="en" label="English" default>' : ""}
       Your browser does not support video playback.
@@ -308,7 +303,7 @@ function caseBlock(section, slug) {
   return body ? '<section class="case-section">' + heading + body + '</section>' : "";
 }
 
-export function projectView(content, project, preview = false) {
+export function projectView(content, project) {
   const { services, projects } = content;
   const service = services.find(item => item.slug === project.service);
   const related = projects.filter(item => item.slug !== project.slug).sort((a, b) => Number(b.service === project.service) - Number(a.service === project.service)).slice(0, 3);
@@ -316,9 +311,8 @@ export function projectView(content, project, preview = false) {
   const external = (project.links ?? []).filter(link => safeLink(link.url));
   return `<article>
     <div class="frame page-intro case-intro">
-      ${preview ? '<p class="notice">Private draft preview. Public visitors only see the published version.</p>' : ""}
       <a href="${service ? serviceUrl(service) : "/work"}" class="breadcrumb">${h(service?.title ?? "All work")}</a>
-      ${eyebrow(project.demo ? "Demo case study" : (project.category || "Case study"))}
+      ${eyebrow(project.category || "Case study")}
       <h1>${h(project.title)}</h1><p>${h(project.summary)}</p>
       <dl class="case-facts">
         ${project.role ? '<div><dt>Role</dt><dd>' + h(project.role) + '</dd></div>' : ""}
@@ -330,7 +324,7 @@ export function projectView(content, project, preview = false) {
     <div class="frame case-hero">${videos ? videoPlayer(videos, project.cover) : project.cover ? lightboxImage(project.cover, project.slug) : ""}</div>
     <div class="frame case-body">${(project.sections ?? []).map(section => caseBlock(section, project.slug)).join("")}</div>
   </article>
-  ${!preview && related.length ? '<section class="frame section">' + sectionTitle("Portfolio", "More", "work.") + workGrid(related, services, "related-grid") + '</section>' : ""}`;
+  ${related.length ? '<section class="frame section">' + sectionTitle("Portfolio", "More", "work.") + workGrid(related, services, "related-grid") + '</section>' : ""}`;
 }
 
 export function aboutView(content) {
@@ -342,24 +336,16 @@ export function aboutView(content) {
   <section class="frame section">${sectionTitle("Capabilities", "Skills and", "tools.")}<div class="about-skills">${services.map(service => '<article><h3><a href="' + serviceUrl(service) + '">' + h(service.title) + '</a></h3><p>' + h(service.description) + '</p>' + tags([...(service.skills ?? []), ...(service.tools ?? [])]) + '</article>').join("")}</div></section>`;
 }
 
-export function contactView(content, selected = [], values = {}, notice = "", success = false) {
+export function contactView(content, serviceSlug) {
   const { services, profile } = content;
-  return `<section class="frame contact-page">
-    <div class="page-intro">${eyebrow("Contact")}<h1>Let’s make <em>something.</em></h1><p>Tell me what you’re working on and where you could use a hand.</p>${profile.email ? '<a class="contact-email" href="mailto:' + h(profile.email) + '">' + h(profile.email) + '</a>' : ""}</div>
-    <form class="panel enquiry-form" method="post" action="/contact">
-      <h2>Project enquiry</h2>
-      ${notice ? '<p class="notice' + (success ? ' success' : '') + '" role="status">' + h(notice) + '</p>' : ""}
-      <div class="form-pair">
-        <label>Name <input name="name" autocomplete="name" required minlength="2" maxlength="100" value="${h(values.name)}"></label>
-        <label>Email <input name="email" type="email" autocomplete="email" required maxlength="254" value="${h(values.email)}"></label>
-      </div>
-      <fieldset><legend>What do you need?</legend><div class="check-grid">${[...services.map(service => [service.slug, service.title]), ["general", "General enquiry"]].map(([value, label]) => '<label class="check"><input type="checkbox" name="service" value="' + h(value) + '"' + (selected.includes(value) ? " checked" : "") + '> ' + h(label) + '</label>').join("")}</div></fieldset>
-      <label>Budget <span class="muted">(optional)</span><input name="budget" maxlength="100" value="${h(values.budget)}" placeholder="Your estimated range"></label>
-      <label>Project details <textarea name="message" required minlength="10" maxlength="3000" rows="5" placeholder="A little about the project, timing, or deliverables…">${h(values.message)}</textarea></label>
-      <div class="trap" aria-hidden="true"><label>Website <input name="website" tabindex="-1" autocomplete="off"></label></div>
-      <button type="submit" class="button primary">Send enquiry</button>
-      ${content.demo ? '<p class="demo-note">Preview mode. This form validates input without saving or sending it.</p>' : ""}
-    </form>
+  const service = services.find(item => item.slug === serviceSlug);
+  const subject = service ? service.title + " enquiry" : "Portfolio enquiry";
+  const email = "mailto:" + profile.email + "?subject=" + encodeURIComponent(subject);
+  return `<section class="frame page-intro contact-page">
+    ${eyebrow("Contact")}
+    <h1>Let’s make <em>something.</em></h1>
+    <p>Email me with a short note about your project, what you need, and your timeline.</p>
+    <div class="actions">${button(profile.email, email)}</div>
   </section>`;
 }
 

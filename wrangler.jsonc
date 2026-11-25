@@ -1,0 +1,10 @@
+{
+  "name": "jcreativepf",
+  "main": "./dist/server/index.js",
+  "compatibility_date": "2026-11-26",
+  "workers_dev": true,
+  "keep_vars": true,
+  "assets": {
+    "directory": "./public"
+  }
+}

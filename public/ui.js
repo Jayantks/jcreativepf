@@ -146,50 +146,6 @@ if (lightbox) {
   });
 }
 
-const sectionsEditor = document.querySelector("[data-sections]");
-if (sectionsEditor) {
-  const template = document.querySelector("[data-section-template]");
-  for (const block of sectionsEditor.querySelectorAll(".admin-block")) updateSectionFields(block);
-
-  document.querySelector("[data-add-section]").addEventListener("click", () => {
-    if (sectionsEditor.children.length >= 20) return;
-    const block = template.content.firstElementChild.cloneNode(true);
-    const key = crypto.randomUUID();
-    for (const field of block.querySelectorAll("[name]")) {
-      field.name = field.name.replace("TEMPLATE", key);
-      if (field.name === "section") field.value = key;
-    }
-    sectionsEditor.append(block);
-    updateSectionFields(block);
-    block.querySelector("select").focus();
-  });
-  sectionsEditor.addEventListener("change", event => {
-    if (event.target.matches("[data-section-type]")) updateSectionFields(event.target.closest(".admin-block"));
-  });
-  sectionsEditor.addEventListener("click", event => {
-    const button = event.target.closest("[data-reorder]");
-    if (!button) return;
-    const block = button.closest(".admin-block");
-    if (button.dataset.reorder === "up" && block.previousElementSibling) block.previousElementSibling.before(block);
-    if (button.dataset.reorder === "down" && block.nextElementSibling) block.nextElementSibling.after(block);
-    if (button.dataset.reorder === "remove") {
-      const successor = block.nextElementSibling ?? block.previousElementSibling;
-      block.remove();
-      (successor?.querySelector("select") ?? document.querySelector("[data-add-section]")).focus();
-    } else button.focus();
-  });
-}
-
-function updateSectionFields(block) {
-  const type = block.querySelector("[data-section-type]").value;
-  block.querySelector("[data-format-hint]").hidden = type !== "text";
-  for (const field of block.querySelectorAll("[data-for-section]")) {
-    field.hidden = !field.dataset.forSection.split(" ").includes(type);
-    field.querySelector("input, textarea, select").disabled = field.hidden;
-  }
-}
-
-
 // A viewport-sized fog field carries the pointer's direction into a soft wake.
 const mistCanvas = document.querySelector(".page-mist");
 if (mistCanvas) {

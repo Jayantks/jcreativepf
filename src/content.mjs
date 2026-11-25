@@ -4,7 +4,7 @@ const studio = {
   headlineAccent: "Jayant.",
   intro: "I create across graphic design, video editing, UI/UX design, and full stack development.",
   bio: "I’m Jayant, a multidisciplinary creative exploring the space between design and technology. My work brings together visual identities, moving images, digital interfaces, and web applications. This portfolio is where I share my projects and the thinking behind them.",
-  email: "",
+  email: "jayantsharmacreates@gmail.com",
   resume: "",
   socials: [],
 };
@@ -615,21 +615,4 @@ projects.push(...[{"service": "development", "slug": "food-delivery-app", "title
 
 projects.push(...[{"slug": "cultural-ceremony-proposal", "title": "Cultural Ceremony Proposal", "service": "graphic-design", "category": "Proposal design", "summary": "Sponsorship proposal cover for the Dilli Meri Jaan cultural ceremony.", "cover": {"type": "image", "src": "/media/cultural-ceremony-proposal.webp", "small": "/media/cultural-ceremony-proposal-small.webp", "alt": "Cultural Ceremony Proposal"}, "featured": false, "sort": 24, "tools": [], "sections": []}, {"slug": "district-3040", "title": "District 3040 \u00b7 Dilli Meri Jaan", "service": "graphic-design", "category": "Event poster", "summary": "Event artwork welcoming District 3040 to Dilli Meri Jaan.", "cover": {"type": "image", "src": "/media/district-3040.webp", "small": "/media/district-3040-small.webp", "alt": "District 3040 \u00b7 Dilli Meri Jaan"}, "featured": false, "sort": 25, "tools": [], "sections": []}, {"slug": "rotaract-business-card", "title": "Rotaract Business Card", "service": "graphic-design", "category": "Business card", "summary": "Business card design for a District Rotaract representative.", "cover": {"type": "image", "src": "/media/rotaract-business-card.webp", "small": "/media/rotaract-business-card-small.webp", "alt": "Rotaract Business Card"}, "featured": false, "sort": 26, "tools": [], "sections": []}]);
 
-const profileDefaults = studio;
-const serviceDefaults = disciplines;
-
-export function demoContent() {
-  return { profile: studio, services: disciplines, projects, demo: true };
-}
-
-export function resolveContent(settings = {}, published = []) {
-  return {
-    profile: { ...profileDefaults, ...settings.profile },
-    services: serviceDefaults.map(service => ({ ...service, ...settings.services?.[service.slug], slug: service.slug }))
-      .sort((a, b) => (a.sort ?? 0) - (b.sort ?? 0)),
-    projects: published.map(row => ({ ...row.live, slug: row.slug })),
-    demo: false,
-  };
-}
-
-export const serviceSlugs = disciplines.map(service => service.slug);
+export const portfolioContent = { profile: studio, services: disciplines, projects };

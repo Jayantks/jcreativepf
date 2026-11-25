@@ -3,7 +3,7 @@ import { fileURLToPath } from "node:url";
 
 const root = new URL("../", import.meta.url);
 const at = relative => new URL(relative, root);
-const modules = ["content", "views", "database", "admin", "worker"];
+const modules = ["content", "views", "worker"];
 const source = await Promise.all(modules.map(async name => {
   const code = await readFile(at("src/" + name + ".mjs"), "utf8");
   return code.replace(/^import [^\n]+ from "\.\/[^"\n]+";\r?\n/gm, "").replace(/^export /gm, "");
