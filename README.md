@@ -20,6 +20,10 @@ Connect this GitHub repository in Workers & Pages and select the `main` branch. 
 
 The deployment runs without database or email service credentials. Set the optional `SITE_URL` runtime variable to your preferred HTTPS origin if you use a custom domain.
 
+## Deploy to Vercel
+
+Import this GitHub repository in Vercel and use the repository root with the **Other** framework preset. The checked-in `vercel.json` serves `public/` and routes page requests to the portfolio function. The function renders the same site from the bundled content without a separate frontend build.
+
 ## Update the portfolio
 
 Edit project descriptions, gallery entries, and the contact address in [src/content.mjs](src/content.mjs). Save public artwork in `public/media/`, keep project slugs stable so shared links keep working, and redeploy to publish changes. Portfolio reel thumbnails are bundled, and the full-length reels are streamed from their existing Google Drive links.

@@ -1,0 +1,10 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "framework": null,
+  "buildCommand": "",
+  "outputDirectory": "public",
+  "routes": [
+    { "handle": "filesystem" },
+    { "src": "/(.*)", "dest": "/api/portfolio?__portfolio_path=/$1" }
+  ]
+}
